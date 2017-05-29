@@ -3,12 +3,13 @@
 # Layer size: big: ~130 MB
 FROM ubuntu:xenial-20170510
 ENV UBUNTU_FLAVOR="xenial" \
-    UBUNTU_DATE="20170510"
+    UBUNTU_DATE="20170510" \
+    UBUNTU_MIRROR="http://mirror.internode.on.net/pub/ubuntu/ubuntu"
 
 #== Ubuntu flavors - common
-RUN  echo "deb http://archive.ubuntu.com/ubuntu ${UBUNTU_FLAVOR} main universe\n" > /etc/apt/sources.list \
-  && echo "deb http://archive.ubuntu.com/ubuntu ${UBUNTU_FLAVOR}-updates main universe\n" >> /etc/apt/sources.list \
-  && echo "deb http://archive.ubuntu.com/ubuntu ${UBUNTU_FLAVOR}-security main universe\n" >> /etc/apt/sources.list
+RUN  echo "deb ${UBUNTU_MIRROR} ${UBUNTU_FLAVOR} main universe\n" > /etc/apt/sources.list \
+  && echo "deb ${UBUNTU_MIRROR} ${UBUNTU_FLAVOR}-updates main universe\n" >> /etc/apt/sources.list \
+  && echo "deb ${UBUNTU_MIRROR} ${UBUNTU_FLAVOR}-security main universe\n" >> /etc/apt/sources.list
 
 MAINTAINER Team EP <diemol+team-ep@gmail.com>
 # https://github.com/docker/docker/pull/25466#discussion-diff-74622923R677
@@ -341,11 +342,17 @@ RUN cd /tmp \
 # TestingBot Tunneling #
 # -----------------------#
 # https://testingbot.com/support/other/tunnel
-ENV TB_TUNNEL_URL="https://testingbot.com/tunnel/testingbot-tunnel.jar"
-RUN cd /tmp \
-  && wget -nv "${TB_TUNNEL_URL}" \
-  && mv testingbot-tunnel.jar /usr/local/bin \
-  && java -jar /usr/local/bin/testingbot-tunnel.jar --version
+#ENV TB_TUNNEL_URL="https://testingbot.com/tunnel/testingbot-tunnel.jar"
+#RUN cd /tmp \
+#  && wget -nv "${TB_TUNNEL_URL}" \
+#  && mv testingbot-tunnel.jar /usr/local/bin \
+#  && java -jar /usr/local/bin/testingbot-tunnel.jar --version
+
+RUN apt-get -qqy update \
+  && apt-get -qqy install \
+    openjdk-8-jdk-headless openjdk-8-dbg \
+  && apt-get -qyy autoremove \
+  && rm -rf /var/lib/apt/lists/*
 
 #===================================================
 # Run the following commands as non-privileged user
@@ -367,6 +374,8 @@ RUN  export SELBASE="https://selenium-release.storage.googleapis.com" \
 #==========
 # Zalenium
 #==========
+EXPOSE 4444 4445 5555
+
 ENV ZAL_VER="${project.build.finalName}" \
     BROWSER_STACK_TUNNEL_OPTS="-skipCheck -v -forcelocal" \
     BROWSER_STACK_TUNNEL_ID="zalenium" \

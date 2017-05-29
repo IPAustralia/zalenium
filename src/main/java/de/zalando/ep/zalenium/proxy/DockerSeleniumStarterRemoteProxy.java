@@ -375,6 +375,7 @@ public class DockerSeleniumStarterRemoteProxy extends DefaultRemoteProxy impleme
     public void beforeRegistration() {
         readConfigurationFromEnvVariables();
         setupCompleted = false;
+        containerClient.initialiseContainerEnvironment();
         createContainersOnStartup();
     }
 
