@@ -364,6 +364,7 @@ public class DockerSeleniumRemoteProxy extends DefaultRemoteProxy {
             if (!videoWasCopied) {
                 testInformation.setVideoRecorded(false);
             }
+            containerClient.copyFilesComplete(containerId, tarStream);
         }
 
     }

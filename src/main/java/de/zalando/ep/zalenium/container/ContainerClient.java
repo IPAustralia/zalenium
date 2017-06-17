@@ -14,6 +14,8 @@ public interface ContainerClient {
 
     InputStream copyFiles(String containerId, String folderName);
 
+    void copyFilesComplete(String containerId, InputStream inputStream);
+
     void stopContainer(String containerId);
 
     void executeCommand(String containerId, String[] command, boolean waitForExecution);
